@@ -69,3 +69,12 @@ pnpm dev
 ```
 
 Your app template should now be running on [localhost:3000](http://localhost:3000).
+
+## Customization and Deployment Notes
+
+This repository is based on an open-source chatbot template. These notes describe possible project-level configuration and validation and do not claim authorship of the upstream framework.
+
+- Review the template documentation and license before redistribution or production use.
+- Configure model providers and credentials through server-side environment variables.
+- Test streaming, conversation state, error handling, and provider-specific response formats.
+- Review authentication, rate limits, and data retention before exposing a deployment publicly.
