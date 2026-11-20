@@ -6,9 +6,15 @@ import { createUser, getUser } from "@/lib/db/queries";
 
 import { signIn } from "./auth";
 
-const authFormSchema = z.object({
-  email: z.email(),
+const loginFormSchema = z.object({
+  identifier: z.string().trim().min(3),
   password: z.string().min(6),
+});
+
+const registerFormSchema = z.object({
+  email: z.email(),
+  phone: z.string().trim().regex(/^\+?[\d\s().-]{8,24}$/),
+  password: z.string().min(8),
 });
 
 export type LoginActionState = {
@@ -20,13 +26,13 @@ export const login = async (
   formData: FormData
 ): Promise<LoginActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
-      email: formData.get("email"),
+    const validatedData = loginFormSchema.parse({
+      identifier: formData.get("identifier"),
       password: formData.get("password"),
     });
 
     await signIn("credentials", {
-      email: validatedData.email,
+      identifier: validatedData.identifier,
       password: validatedData.password,
       redirect: false,
     });
@@ -56,19 +62,25 @@ export const register = async (
   formData: FormData
 ): Promise<RegisterActionState> => {
   try {
-    const validatedData = authFormSchema.parse({
+    const validatedData = registerFormSchema.parse({
       email: formData.get("email"),
+      phone: formData.get("phone"),
       password: formData.get("password"),
     });
 
-    const [user] = await getUser(validatedData.email);
+    const [userByEmail] = await getUser(validatedData.email);
+    const [userByPhone] = await getUser(validatedData.phone);
 
-    if (user) {
+    if (userByEmail || userByPhone) {
       return { status: "user_exists" } as RegisterActionState;
     }
-    await createUser(validatedData.email, validatedData.password);
+    await createUser(
+      validatedData.email,
+      validatedData.password,
+      validatedData.phone
+    );
     await signIn("credentials", {
-      email: validatedData.email,
+      identifier: validatedData.email,
       password: validatedData.password,
       redirect: false,
     });

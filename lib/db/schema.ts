@@ -7,6 +7,7 @@ import {
   primaryKey,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -20,8 +21,11 @@ export const user = pgTable("User", {
   isAnonymous: boolean("isAnonymous").notNull().default(false),
   name: text("name"),
   password: varchar("password", { length: 64 }),
+  phone: varchar("phone", { length: 24 }),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
-});
+}, (table) => ({
+  phoneUnique: uniqueIndex("User_phone_unique").on(table.phone),
+}));
 
 export type User = InferSelectModel<typeof user>;
 

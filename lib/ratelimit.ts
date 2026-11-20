@@ -5,6 +5,7 @@ import { ChatbotError } from "@/lib/errors";
 
 const MAX_MESSAGES = 10;
 const TTL_SECONDS = 60 * 60;
+const localWindows = new Map<string, { count: number; resetAt: number }>();
 
 let client: ReturnType<typeof createClient> | null = null;
 
@@ -26,6 +27,7 @@ export async function checkIpRateLimit(ip: string | undefined) {
 
   const redis = getClient();
   if (!redis?.isReady) {
+    enforceLocalWindow(ip);
     return;
   }
 
@@ -44,5 +46,28 @@ export async function checkIpRateLimit(ip: string | undefined) {
     if (error instanceof ChatbotError) {
       throw error;
     }
+    enforceLocalWindow(ip);
+  }
+}
+
+function enforceLocalWindow(ip: string) {
+  const now = Date.now();
+  const current = localWindows.get(ip);
+  const window = !current || current.resetAt <= now
+    ? { count: 0, resetAt: now + TTL_SECONDS * 1000 }
+    : current;
+
+  window.count += 1;
+  localWindows.set(ip, window);
+
+  // Bound memory if Redis is unavailable on a long-lived runtime.
+  if (localWindows.size > 10_000) {
+    for (const [key, value] of localWindows) {
+      if (value.resetAt <= now) localWindows.delete(key);
+    }
+  }
+
+  if (window.count > MAX_MESSAGES) {
+    throw new ChatbotError("rate_limit:chat");
   }
 }

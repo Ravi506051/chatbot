@@ -39,7 +39,7 @@ export default function Page() {
   }, [state.status]);
 
   const handleSubmit = (formData: FormData) => {
-    setEmail(formData.get("email") as string);
+    setEmail(formData.get("identifier") as string);
     formAction(formData);
   };
 
@@ -49,7 +49,7 @@ export default function Page() {
       <p className="text-sm text-muted-foreground">
         Sign in to your account to continue
       </p>
-      <AuthForm action={handleSubmit} defaultEmail={email}>
+      <AuthForm action={handleSubmit} defaultIdentifier={email}>
         <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
         <p className="text-center text-[13px] text-muted-foreground">
           {"No account? "}

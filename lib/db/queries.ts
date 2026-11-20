@@ -36,19 +36,36 @@ import { generateHashedPassword } from "./utils";
 const client = postgres(process.env.POSTGRES_URL ?? "");
 const db = drizzle(client);
 
-export async function getUser(email: string): Promise<User[]> {
+export async function getUser(identifier: string): Promise<User[]> {
+  const value = identifier.trim();
+  const isPhone = /^\+?[\d\s().-]{8,24}$/.test(value);
   try {
-    return await db.select().from(user).where(eq(user.email, email));
+    return await db
+      .select()
+      .from(user)
+      .where(
+        isPhone
+          ? eq(user.phone, value.replace(/[\s().-]/g, ""))
+          : eq(user.email, value.toLowerCase())
+      );
   } catch (error) {
     throw new ChatbotError("bad_request:database", { cause: error });
   }
 }
 
-export async function createUser(email: string, password: string) {
+export async function createUser(
+  email: string,
+  password: string,
+  phone: string
+) {
   const hashedPassword = generateHashedPassword(password);
 
   try {
-    return await db.insert(user).values({ email, password: hashedPassword });
+    return await db.insert(user).values({
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      phone: phone.replace(/[\s().-]/g, ""),
+    });
   } catch (error) {
     throw new ChatbotError("bad_request:database", {
       cause: error,
