@@ -2,8 +2,10 @@ import { compare } from "bcrypt-ts";
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { DefaultJWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
+import GitHub from "next-auth/providers/github";
+import Google from "next-auth/providers/google";
 import { DUMMY_PASSWORD } from "@/lib/constants";
-import { getUser } from "@/lib/db/queries";
+import { getOrCreateOAuthUser, getUser } from "@/lib/db/queries";
 import { authConfig } from "./auth.config";
 
 export type UserType = "guest" | "regular";
@@ -19,7 +21,7 @@ declare module "next-auth" {
   interface User {
     email?: string | null;
     id?: string;
-    type: UserType;
+    type?: UserType;
   }
 }
 
@@ -38,10 +40,22 @@ export const {
 } = NextAuth({
   ...authConfig,
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.id = user.id as string;
-        token.type = user.type;
+        if (account && account.provider !== "credentials") {
+          const localUser = await getOrCreateOAuthUser({
+            name: user.name ?? null,
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+          });
+          token.id = localUser.id;
+          token.type = "regular";
+          token.name = localUser.name;
+          token.email = localUser.email;
+        } else {
+          token.id = user.id as string;
+          token.type = "regular";
+        }
       }
 
       return token;
@@ -56,6 +70,8 @@ export const {
     },
   },
   providers: [
+    Google,
+    GitHub,
     Credentials({
       async authorize(credentials) {
         const identifier = String(credentials.identifier ?? "");

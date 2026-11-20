@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import {
   and,
   asc,
@@ -70,6 +71,60 @@ export async function createUser(
     throw new ChatbotError("bad_request:database", {
       cause: error,
     });
+  }
+}
+
+export async function getOrCreateOAuthUser({
+  provider,
+  providerAccountId,
+  name,
+}: {
+  provider: string;
+  providerAccountId: string;
+  name: string | null;
+}): Promise<User> {
+  const findIdentity = async () => {
+    const [existing] = await db
+      .select()
+      .from(user)
+      .where(
+        and(
+          eq(user.oauthProvider, provider),
+          eq(user.oauthAccountId, providerAccountId)
+        )
+      )
+      .limit(1);
+    return existing;
+  };
+
+  try {
+    const existing = await findIdentity();
+    if (existing) return existing;
+
+    // Keep provider emails out of the app database and never auto-link an
+    // OAuth identity to a password account just because the emails match.
+    const digest = createHash("sha256")
+      .update(`${provider}:${providerAccountId}`)
+      .digest("hex")
+      .slice(0, 28);
+    const email = `oauth-${digest}@accounts.chatyantra.invalid`;
+    const [created] = await db
+      .insert(user)
+      .values({
+        email,
+        name: name?.trim() || `${provider} account`,
+        oauthAccountId: providerAccountId,
+        oauthProvider: provider,
+        password: generateHashedPassword(generateUUID()),
+      })
+      .returning();
+
+    if (!created) throw new Error("OAuth account could not be created");
+    return created;
+  } catch (error) {
+    const raced = await findIdentity().catch(() => undefined);
+    if (raced) return raced;
+    throw new ChatbotError("bad_request:database", { cause: error });
   }
 }
 

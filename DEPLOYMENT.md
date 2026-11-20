@@ -10,6 +10,13 @@ Registration stores an email address, a mobile number, and a password hash. Sign
 
 Chat history is stored in PostgreSQL and is tied to the signed-in account. Configure `POSTGRES_URL` in the Vercel project's Production, Preview, and Development environments. The deployment build runs the Drizzle migrations, including the new unique mobile-number index. Without `POSTGRES_URL`, account creation, authentication, and server-side chat history cannot work.
 
+Google and GitHub sign-in use Auth.js OAuth. Add `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_GITHUB_ID`, and `AUTH_GITHUB_SECRET` to the Vercel project. Register these callback URLs with the providers:
+
+- `https://ravi-ai-chatbot.vercel.app/api/auth/callback/google`
+- `https://ravi-ai-chatbot.vercel.app/api/auth/callback/github`
+
+OAuth identities are stored separately from email/password accounts; matching email addresses are never silently linked. OAuth users should continue signing in with the same provider they used to create their account.
+
 ## Rate limiting
 
 Chat requests have a 10-message per-hour account limit. IP-based requests are also limited to 10 per hour with Redis when `REDIS_URL` is configured. If Redis is unavailable, the IP limiter falls back to a per-runtime memory window; account limits remain database-backed.

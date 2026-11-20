@@ -7,7 +7,7 @@ import "./globals.css";
 import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
-  description: "ChatYantra AI — a private, Gemini-powered AI workspace.",
+  description: "ChatYantra AI — a private workspace for your ideas and work.",
   metadataBase: new URL("https://ravi-ai-chatbot.vercel.app"),
   title: "ChatYantra AI",
 };

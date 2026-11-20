@@ -60,7 +60,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 
   const handleNewChat = useCallback(() => {
     setOpenMobile(false);
-    router.push("/");
+    router.push("/chatbot");
   }, [router, setOpenMobile]);
 
   const handleShowDeleteAllDialog = useCallback(() => {
@@ -69,7 +69,7 @@ export function AppSidebar({ user }: { user: User | undefined }) {
 
   const handleDeleteAll = useCallback(() => {
     setShowDeleteAllDialog(false);
-    router.replace("/");
+    router.replace("/chatbot");
     mutate(unstable_serialize(getChatHistoryPaginationKey), [], {
       revalidate: false,
     });
@@ -93,10 +93,13 @@ export function AppSidebar({ user }: { user: User | undefined }) {
                   className="size-8 !px-0 items-center justify-center group-data-[collapsible=icon]:group-hover/logo:opacity-0"
                   tooltip="Chatbot"
                 >
-                  <Link href="/" onClick={closeMobile}>
+                  <Link href="/chatbot" onClick={closeMobile}>
                     <MessageSquareIcon className="size-4 text-sidebar-foreground/50" />
                   </Link>
                 </SidebarMenuButton>
+                <span className="ml-2 text-[13px] font-semibold tracking-tight group-data-[collapsible=icon]:hidden">
+                  ChatYantra
+                </span>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <SidebarMenuButton

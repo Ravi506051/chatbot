@@ -20,11 +20,17 @@ export const user = pgTable("User", {
   image: text("image"),
   isAnonymous: boolean("isAnonymous").notNull().default(false),
   name: text("name"),
+  oauthAccountId: varchar("oauthAccountId", { length: 128 }),
+  oauthProvider: varchar("oauthProvider", { length: 64 }),
   password: varchar("password", { length: 64 }),
   phone: varchar("phone", { length: 24 }),
   updatedAt: timestamp("updatedAt").notNull().defaultNow(),
 }, (table) => ({
   phoneUnique: uniqueIndex("User_phone_unique").on(table.phone),
+  oauthIdentityUnique: uniqueIndex("User_oauth_identity_unique").on(
+    table.oauthProvider,
+    table.oauthAccountId
+  ),
 }));
 
 export type User = InferSelectModel<typeof user>;

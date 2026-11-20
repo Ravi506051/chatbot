@@ -20,6 +20,11 @@ export async function proxy(request: NextRequest) {
   });
 
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const landingPath = `${base}/`;
+
+  if (pathname === landingPath) {
+    return NextResponse.next();
+  }
 
   if (!token) {
     if (pathname === `${base}/login` || pathname === `${base}/register`) {
@@ -39,7 +44,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if ([`${base}/login`, `${base}/register`].includes(pathname)) {
-    return NextResponse.redirect(new URL(`${base}/`, request.url));
+    return NextResponse.redirect(new URL(`${base}/chatbot`, request.url));
   }
 
   return NextResponse.next();

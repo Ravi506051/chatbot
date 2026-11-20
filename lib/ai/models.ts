@@ -4,8 +4,8 @@ export const titleModel = {
   description: "Fast model for title generation",
   gatewayOrder: ["google-vertex"],
   id: "google/gemini-2.5-flash",
-  name: "Gemini 2.5 Flash",
-  provider: "google",
+  name: "ChatYantra AI",
+  provider: "chatyantra",
 };
 
 export type ModelCapabilities = {
@@ -28,8 +28,8 @@ export const chatModels: ChatModel[] = [
     description: "Fast Gemini model for everyday chat, code, and images",
     gatewayOrder: ["google-vertex"],
     id: "google/gemini-2.5-flash",
-    name: "Gemini 2.5 Flash",
-    provider: "google",
+    name: "ChatYantra AI",
+    provider: "chatyantra",
   },
 ];
 
