@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { guestRegex, isDevelopmentEnvironment } from "./lib/constants";
+import { isDevelopmentEnvironment } from "./lib/constants";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -22,16 +22,23 @@ export async function proxy(request: NextRequest) {
   const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
   if (!token) {
-    const redirectUrl = encodeURIComponent(new URL(request.url).pathname);
+    if (pathname === `${base}/login` || pathname === `${base}/register`) {
+      return NextResponse.next();
+    }
 
-    return NextResponse.redirect(
-      new URL(`${base}/api/auth/guest?redirectUrl=${redirectUrl}`, request.url)
+    if (pathname.startsWith(`${base}/api/`)) {
+      return NextResponse.json({ error: "Sign in required" }, { status: 401 });
+    }
+
+    const signInUrl = new URL(`${base}/login`, request.url);
+    signInUrl.searchParams.set(
+      "callbackUrl",
+      `${request.nextUrl.pathname}${request.nextUrl.search}`
     );
+    return NextResponse.redirect(signInUrl);
   }
 
-  const isGuest = guestRegex.test(token?.email ?? "");
-
-  if (token && !isGuest && ["/login", "/register"].includes(pathname)) {
+  if ([`${base}/login`, `${base}/register`].includes(pathname)) {
     return NextResponse.redirect(new URL(`${base}/`, request.url));
   }
 
