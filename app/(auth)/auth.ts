@@ -70,8 +70,12 @@ export const {
     },
   },
   providers: [
-    Google,
-    GitHub,
+    ...(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
+      ? [Google]
+      : []),
+    ...(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET
+      ? [GitHub]
+      : []),
     Credentials({
       async authorize(credentials) {
         const identifier = String(credentials.identifier ?? "");
