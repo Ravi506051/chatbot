@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       id: session.user.id,
     });
 
-    if (messageCount > entitlementsByUserType[userType].maxMessagesPerHour) {
+    if (messageCount >= entitlementsByUserType[userType].maxMessagesPerHour) {
       return new ChatbotError("rate_limit:chat").toResponse();
     }
 
