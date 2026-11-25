@@ -58,6 +58,14 @@ You will need to use the environment variables [defined in `.env.example`](.env.
 
 > Note: You should not commit your `.env` file or it will expose secrets that will allow others to control access to your various AI and authentication provider accounts.
 
+### Authentication configuration
+
+The app uses `POSTGRES_URL` for account and chat data. Google sign-in also needs
+`AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`. In Google Cloud Console, add
+`https://ravi-ai-chatbot.vercel.app/api/auth/callback/google` as an authorized
+redirect URI, then add the OAuth credentials to the Vercel Production and Preview
+environments. Keep these values private and never commit them to the repository.
+
 1. Install Vercel CLI: `npm i -g vercel`
 2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
 3. Download your environment variables: `vercel env pull`

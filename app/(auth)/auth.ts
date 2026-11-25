@@ -2,7 +2,6 @@ import { compare } from "bcrypt-ts";
 import NextAuth, { type DefaultSession } from "next-auth";
 import type { DefaultJWT } from "next-auth/jwt";
 import Credentials from "next-auth/providers/credentials";
-import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { DUMMY_PASSWORD } from "@/lib/constants";
 import { getOrCreateOAuthUser, getUser } from "@/lib/db/queries";
@@ -72,9 +71,6 @@ export const {
   providers: [
     ...(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET
       ? [Google]
-      : []),
-    ...(process.env.AUTH_GITHUB_ID && process.env.AUTH_GITHUB_SECRET
-      ? [GitHub]
       : []),
     Credentials({
       async authorize(credentials) {

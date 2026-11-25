@@ -62,14 +62,14 @@ const steps = [
 
 const faqs = [
   ["What is ChatYantra AI?", "A private AI workspace for everyday questions, writing, coding, and working with your files. It uses Gemini 2.5 Flash through Vercel AI Gateway."],
-  ["How do I create an account?", "Register with your email address, mobile number, and password, or sign in with Google or GitHub when those providers are enabled for the deployment."],
+  ["How do I create an account?", "Register with your email address, mobile number, and password, or use Google sign-in when it is enabled for the deployment."],
   ["Are my conversations saved?", "Signed-in conversations are stored with your account so you can return to them later. Your chats are not public."],
   ["Is there a usage limit?", "Yes. Chat requests are limited to 10 messages per hour per account. An additional IP-based hourly limit helps protect the service from abuse."],
   ["Can I use my own Gemini API key?", "This build routes Gemini through the app's Vercel AI Gateway configuration; visitors do not need to paste an API key."],
 ];
 
 const privacyFeatures = [
-  { icon: Fingerprint, title: "Sign in your way", description: "Use email and password, or continue with Google or GitHub when configured." },
+  { icon: Fingerprint, title: "Sign in your way", description: "Use email or mobile with your password, or continue with Google when configured." },
   { icon: TimerReset, title: "Clear hourly limits", description: "The app enforces account and IP request limits to help prevent abuse." },
   { icon: LockKeyhole, title: "Separate account data", description: "Your conversations are associated with your signed-in account." },
 ];

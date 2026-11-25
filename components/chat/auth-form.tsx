@@ -17,7 +17,7 @@ export function AuthForm({
   mode?: "login" | "register";
 }) {
   const inputClassName =
-    "h-10 rounded-lg border-border/50 bg-muted/50 text-sm transition-colors focus:border-foreground/20 focus:bg-muted";
+    "h-11 rounded-md border-slate-300 bg-white text-[15px] shadow-sm placeholder:text-slate-400 focus-visible:border-blue-600 focus-visible:ring-2 focus-visible:ring-blue-600/15";
 
   return (
     <Form action={action} className="flex flex-col gap-4">
@@ -25,7 +25,7 @@ export function AuthForm({
         <>
           <div className="flex flex-col gap-2">
             <Label
-              className="font-normal text-muted-foreground"
+              className="font-medium text-slate-700"
               htmlFor="email"
             >
               Email
@@ -63,7 +63,7 @@ export function AuthForm({
       ) : (
         <div className="flex flex-col gap-2">
           <Label
-            className="font-normal text-muted-foreground"
+            className="font-medium text-slate-700"
             htmlFor="identifier"
           >
             Email or mobile number
@@ -83,7 +83,7 @@ export function AuthForm({
       )}
 
       <div className="flex flex-col gap-2">
-        <Label className="font-normal text-muted-foreground" htmlFor="password">
+        <Label className="font-medium text-slate-700" htmlFor="password">
           Password
         </Label>
         <Input

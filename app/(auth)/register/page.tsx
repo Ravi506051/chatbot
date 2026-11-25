@@ -36,8 +36,12 @@ export default function Page() {
     } else if (state.status === "success") {
       toast({ description: "Account created!", type: "success" });
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+      void updateSession()
+        .catch(() => null)
+        .finally(() => {
+          router.replace("/chatbot");
+          router.refresh();
+        });
     }
   }, [state.status]);
 
@@ -48,15 +52,24 @@ export default function Page() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Create account</h1>
-      <p className="text-sm text-muted-foreground">Get started for free</p>
+      <h1 className="text-[28px] font-normal tracking-tight text-slate-900">
+        Create your account
+      </h1>
+      <p className="mb-3 text-sm text-slate-600">
+        A personal space for your ideas and conversations
+      </p>
       <AuthForm action={handleSubmit} defaultIdentifier={email} mode="register">
-        <SubmitButton isSuccessful={isSuccessful}>Sign up</SubmitButton>
+        <SubmitButton
+          className="bg-[#1a73e8] text-white hover:bg-[#1765cc]"
+          isSuccessful={isSuccessful}
+        >
+          Create account
+        </SubmitButton>
         <OAuthButtons />
-        <p className="text-center text-[13px] text-muted-foreground">
+        <p className="pt-1 text-center text-[13px] text-slate-600">
           {"Have an account? "}
           <Link
-            className="text-foreground underline-offset-4 hover:underline"
+            className="font-medium text-[#1a73e8] underline-offset-4 hover:underline"
             href="/login"
           >
             Sign in

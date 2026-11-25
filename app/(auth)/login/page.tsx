@@ -26,7 +26,10 @@ export default function Page() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: router and updateSession are stable refs
   useEffect(() => {
     if (state.status === "failed") {
-      toast({ description: "Invalid credentials!", type: "error" });
+      toast({
+        description: "Could not sign in. Check your details and try again.",
+        type: "error",
+      });
     } else if (state.status === "invalid_data") {
       toast({
         description: "Failed validating your submission!",
@@ -34,8 +37,12 @@ export default function Page() {
       });
     } else if (state.status === "success") {
       setIsSuccessful(true);
-      updateSession();
-      router.refresh();
+      void updateSession()
+        .catch(() => null)
+        .finally(() => {
+          router.replace("/chatbot");
+          router.refresh();
+        });
     }
   }, [state.status]);
 
@@ -46,17 +53,24 @@ export default function Page() {
 
   return (
     <>
-      <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
-      <p className="text-sm text-muted-foreground">
-        Sign in to your account to continue
+      <h1 className="text-[28px] font-normal tracking-tight text-slate-900">
+        Sign in
+      </h1>
+      <p className="mb-3 text-sm text-slate-600">
+        Use your ChatYantra account to continue
       </p>
       <AuthForm action={handleSubmit} defaultIdentifier={email}>
-        <SubmitButton isSuccessful={isSuccessful}>Sign in</SubmitButton>
+        <SubmitButton
+          className="bg-[#1a73e8] text-white hover:bg-[#1765cc]"
+          isSuccessful={isSuccessful}
+        >
+          Sign in
+        </SubmitButton>
         <OAuthButtons />
-        <p className="text-center text-[13px] text-muted-foreground">
+        <p className="pt-1 text-center text-[13px] text-slate-600">
           {"No account? "}
           <Link
-            className="text-foreground underline-offset-4 hover:underline"
+            className="font-medium text-[#1a73e8] underline-offset-4 hover:underline"
             href="/register"
           >
             Sign up
